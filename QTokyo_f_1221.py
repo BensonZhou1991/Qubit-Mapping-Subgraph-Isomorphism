@@ -1,8 +1,6 @@
 # Created on June 10, 2019 by Sanjiang Li || mrlisj@gmail.com
+# Modified on December 21, 2019 to enhance Fallback mechanism
 # Modified on April 19, 2020 // introduced QFilter_type
-''' QTokyo_f_12_21 differs from QTokyo_f in that\
-     the Fallback mechanism is stregthened at the cost of slow process'''
-
 
 # This module defines the main algorithm
 #####\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\
@@ -16,6 +14,7 @@
         # tau[i] = 20 if i is not assigned/occupied
 # gate = [0]*2 represents a CNOT gate, where gate[0] and gate[1] are qubits in C
 # nl is the number of qubits in Q
+# selection: #x00 (current) #x01 (second) #x10 (third)
 # todo: replace 20 with nq: number of qubits in G
 
 #####\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\
@@ -28,17 +27,19 @@ import time
 # check if tau satisfies/entails/solves/executes a gate
 def entail(EG,tau,gate):
     ''' Check if a mapping entails a gate
-        Args:
-            EG (list): the edge list of the architecture graph G
-            tau (list): a mapping from V to Q (! this is different from the article, where tau: Q -> V), where
-                V: the 20 physical qubits in Q20), Q: the set of logic qubits in the input circuit C
-                tau is encoded as a list with length 20
-                tau[i] is the logical qubit associated with the i-th physical qubit in Q20
-                tau[i] = 20 if i is not assigned/occupied
-            gate (list): [p,q] represents a CNOT gate, where p=gate[0] and q=gate[1] are qubits in C
-        Returns:
-            Boolean: True if tau entails gate
+
+    Args:
+        EG (list): the edge list of the architecture graph G
+        tau (list): a mapping from V to Q (! this is different from the article, where tau: Q -> V), where
+            V: the 20 physical qubits in Q20), Q: the set of logic qubits in the input circuit C
+            tau is encoded as a list with length 20
+            tau[i] is the logical qubit associated with the i-th physical qubit in Q20
+            tau[i] = 20 if i is not assigned/occupied
+        gate (list): [p,q] represents a CNOT gate, where p=gate[0] and q=gate[1] are qubits in C
+    Returns:
+        Boolean: True if tau entails gate
     '''
+
     u = gate[0]
     v = gate[1]
     if (u not in tau) or (v not in tau):
@@ -55,13 +56,14 @@ def entail(EG,tau,gate):
 #transform tau to tau' with the images of p and q swapped
 def swap(EG,tau,p,q): # p, q are physical qubits
     ''' Swap the images of p and q in a mapping tau: V->Q
-        Args:
-            EG (list): the edge list of the architecture graph G
-            tau (list): a mapping from V to Q (! this is different from the article, where tau: Q -> V), where
-                V: the 20 physical qubits in Q20), Q: the set of logic qubits in the input circuit C
+
+    Args:
+        EG (list): the edge list of the architecture graph G
+        tau (list): a mapping from V to Q (! this is different from the article, where tau: Q -> V), where
+            V: the 20 physical qubits in Q20), Q: the set of logic qubits in the input circuit C
             p,q: two physical qubits in V
-        Returns:
-            taunew (list): a new mapping with the images of p and q swapped
+    Returns:
+        taunew (list): a new mapping with the images of p and q swapped
     '''
 
     if (p,q) not in EG:
@@ -75,16 +77,18 @@ def swap(EG,tau,p,q): # p, q are physical qubits
 
 # D is a subset of C, LD is the corresponding index set
 def topgates(C,nl,LD):
-    # return the index set of topgates in the *first* front layer of D
     ''' Return the index list of CNOT gates in the toplayer (front layer) of the current circuit D, where
         D is a sublist of the input circuit C, LD is the corresponding index list of D
-        Args:
-            C (list): the input circuit
-            nl (int): the number of qubits in C
-            LD (list): the index list of D, which represents the current logical circuit
-        Returns:
-            LT (list): the index list of CNOT gates which are in the front layer of D
+
+    Args:
+        C (list): the input circuit
+        nl (int): the number of qubits in C
+        LD (list): the index list of D, which represents the current logical circuit
+    Returns:
+        LT (list): the index list of CNOT gates which are in the front layer of D
     '''
+
+    # return the index set of topgates in the *first* front layer of D
     LT = []
     N = set() # the set of qubits of gates in LT
     for i in LD:
@@ -109,17 +113,18 @@ def topgates(C,nl,LD):
 # D is a subset of C, LD is the corresponding index set
 # the second layer of gates in LD
 def topgates2(C,nl,LD):
-    # return the index set of topgates in the *second* layer of D
     ''' Return the index list of CNOT gates in the 2nd layer (the 1st look-ahead layer) of the current circuit D, where
         D is a sublist of the input circuit C, LD is the corresponding index list of D
-        Args:
-            C (list): the input circuit
-            nl (int): the number of qubits in C
-            LD (list): the index list of D, which represents the current logical circuit
-        Returns:
-            LT2 (list): the index list of CNOT gates which are in the 2nd layer (the 1st look-ahead layer) of D
+
+    Args:
+        C (list): the input circuit
+        nl (int): the number of qubits in C
+        LD (list): the index list of D, which represents the current logical circuit
+    Returns:
+        LT2 (list): the index list of CNOT gates which are in the 2nd layer (the 1st look-ahead layer) of D
     '''
-    
+
+    # return the index set of topgates in the *second* layer of D
     LDx = LD[:]
     
     LT = topgates(C,nl,LDx)
@@ -133,17 +138,17 @@ def topgates2(C,nl,LD):
 # D is a subset of C, LD is the corresponding index set
 # go to the third layer
 def topgates3(C,nl,LD):
-    # return the index set of topgates in the *third* layer of D
     ''' Return the index list of CNOT gates in the 3rd layer (the 2nd look-ahead layer) of the current circuit D, where
         D is a sublist of the input circuit C, LD is the corresponding index list of D
-        Args:
-            C (list): the input circuit
-            nl (int): the number of qubits in C
-            LD (list): the index list of D, which represents the current logical circuit
-        Returns:
-            LT3 (list): the index list of CNOT gates which are in the 3nd layer (the 2nd look-ahead layer) of D
-    '''
 
+    Args:
+        C (list): the input circuit
+        nl (int): the number of qubits in C
+        LD (list): the index list of D, which represents the current logical circuit
+    Returns:
+        LT3 (list): the index list of CNOT gates which are in the 3nd layer (the 2nd look-ahead layer) of D
+    '''
+    # return the index set of topgates in the *third* layer of D
     LDx = LD[:]
     
     LT = topgates(C,nl,LDx)
@@ -161,11 +166,13 @@ def topgates3(C,nl,LD):
 ###\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\
 def qubit_in_circuit(D): # the set of logic qubits appeared in D, a subset of C
     ''' Return the set of qubits in a circuit D
-        Args:
-            D (list): a sublist of CNOT gates of the input circuit C
-        Returns:
-            Q (set): the set of qubits in D
+
+    Args:
+        D (list): a sublist of CNOT gates of the input circuit C
+    Returns:
+        Q (set): the set of qubits in D
     '''
+
     Q = set()
     for gate in D:
         Q.add(gate[0])
@@ -186,11 +193,12 @@ def qubit_in_circuit(D): # the set of logic qubits appeared in D, a subset of C
 # the list of logical qubits unoccupied by tau
 def unoccupied(tau):
     ''' Return the list of physical qubits that are not mapped by tau
-        Args:
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
-        Returns:
-            U (list): the list of physical qubits that are not mapped by tau (i.e., all p with tau[p]==20)
-    '''    
+
+    Args:
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
+    Returns:
+        U (list): the list of physical qubits that are not mapped by tau (i.e., all p with tau[p]==20)
+    '''
     U = list(p for p in range(20) if tau[p] == 20)
     return U
 
@@ -205,16 +213,16 @@ def swap_reduce_min_dist(G,tau,TG):
             - MD: [[u,p], [v,q], type], where gate=[u,v], p,q are either unmapped or u==tau[p], v==tau[q], md==nx.shortest_path_length(G,p,q)            
         whenver nx.shortest_path_length(G,p,q) is 1, we return the updated taux and an empty action;
         otherwise, we compute a shortest path pi from p to q and swap the value of tau[p] and tau[p'] with p' the 2nd qubit (i.e., pi[1]) on pi 
-        Args:
-            G (undirected graph): the architecture graph 
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
-            TG (list): a sublist of the input circuits, here denotes the front layer
-        Returns:
-            taux (list): an extended mapping from V to Q
-            action/path (list): list of swaps (one or zero) that transform tau into the new mapping         
+
+    Args:
+        G (undirected graph): the architecture graph 
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
+        TG (list): a sublist of the input circuits, here denotes the front layer
+    Returns:
+        taux (list): an extended mapping from V to Q
+        action (list): list of swaps (one or zero) that transform tau into the new mapping         
     '''
-    
-    md = 5 # the diameter of G is 4
+    md = 5 # the diameter of G (IBM Q20) is 4
     # md = nx.diameter(G) + 1
     # Note: this parameter md is adjustable w.r.t. the architecture graph
     # The function can be revised so that we extend tau only if we have no other choice
@@ -222,9 +230,9 @@ def swap_reduce_min_dist(G,tau,TG):
     MD = []
     Q = qubit_in_circuit(TG)
     U = unoccupied(tau)
-    path = []
+    action = []
     taux = tau[:]
-    for gate in TG: # gate = [x,y] is a gate in TG, where x, y are logic qubits      
+    for gate in TG: # gate = [u,v] is a gate in TG, where u, v are logic qubits      
         u = gate[0]
         v = gate[1]
         
@@ -241,7 +249,7 @@ def swap_reduce_min_dist(G,tau,TG):
                          taux[q] = v
                          return taux, [] # tau is extended
                     else:
-                         md = d
+                         md = d # temporalily store this best distance and the corresponding extension p->u and q-> v in MD
                          MD = [[u,p], [v,q], 0] # 0 denotes the type
 
         elif (u in tau) and (v not in tau): #type 1
@@ -280,18 +288,19 @@ def swap_reduce_min_dist(G,tau,TG):
                  return tau, [] # tau is not changed as it can execute some gates in TG
             else:
                  md = d
-                 MD = [[u,p], [v,q], 3]
+                 MD = [[u,p], [v,q], 3] #
                  
     if TG and not MD:
         print('MD is empty. This is impossible. Please check!')
         return taux, []
-                            
+
+    #print(TG,MD)                            
     u = MD[0][0]                               
     p = MD[0][1]
     v = MD[1][0]
     q = MD[1][1]
     t = MD[2] # type
-    path = []
+    action = []
     if t == 0:
         taux[p] = u
         taux[q] = v
@@ -306,8 +315,8 @@ def swap_reduce_min_dist(G,tau,TG):
 ##        print('We select swap [%s, %s] to reduce the minimum distance!' %(pi[0],pi[1]))
         taux[p] = tau[pi[1]]
         taux[pi[1]] = tau[p]
-        path = [[p,pi[1]]]
-    return taux, path # update tau with swaps in path
+        action = [[p,pi[1]]]
+    return taux, action # update tau with swaps in action
 
 #####################################################################
   ###\__/#      GreedyV3 SWAPS         \__/#\#/~\\__/#\__/#\#/~\__/
@@ -340,7 +349,7 @@ def Q_Filter(C,EG,nl,tau,LD):
 
 # SWAP3x returns all swap sequences that lead to mappings close (dist≤3) to tau
 # D is a subset of the input circuit, and LD its index set
-def SWAP3x(C,EG,nl,tau,LD, QFilter_type):
+def SWAP3x(C,EG,nl,tau,LD, QFliter_type):
     ''' Return all (Q-filtered) actions (swap sequences) with length ≤3, Q0 and Q2 filters are used to exclude possibly less relevant actions
         Args:
             C (list): the input circuit
@@ -348,29 +357,29 @@ def SWAP3x(C,EG,nl,tau,LD, QFilter_type):
             nl (int): the number of qubits in C
             tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
             LD (list): the index list of D, which represents the current logical circuit
-            QFilter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter), '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)
+            QFliter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter), '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)
         Returns:
             SWAP3 (list): each item has form [action, mapping], where action is a list consists of at most 3 swaps,
                         mapping is obtained by applying the action to tau
     '''
     QFilter = Q_Filter(C,EG,nl,tau,LD)
-    if QFilter_type == '0': #no filter is used
+    if QFliter_type == '0': #no filter is used
         QF1 = QFilter[0]
         QF2 = QFilter[0]
         QF3 = QFilter[0]
-    elif QFilter_type == '1': #only Q1-filter (note in the paper this is called Q0-filter)
+    elif QFliter_type == '1': #only Q1-filter (note in the paper this is called Q0-filter)
         QF1 = QFilter[1]
         QF2 = QFilter[1]
         QF3 = QFilter[1]
-    elif QFilter_type == '12': #Q1-filter for the first layer and Q2-filter for the rest (Q0+Q1-filter in the paper)
+    elif QFliter_type == '12': #Q1-filter for the first layer and Q2-filter for the rest (Q0+Q1-filter in the paper)
         QF1 = QFilter[1]
         QF2 = QFilter[2]
         QF3 = QFilter[2]
-    elif QFilter_type == '12x': #Q1-filter for the first layer and (Q1+Q2)-filter for the rest (Q0+weak_Q1-filter
+    elif QFliter_type == '12x': #Q1-filter for the first layer and (Q1+Q2)-filter for the rest (Q0+weak_Q1-filter
         QF1 = QFilter[1]
         QF2 = QFilter[3]
         QF3 = QFilter[3]
-    elif QFilter_type == '2x': #only Q2x-filter
+    elif QFliter_type == '2x': #only Q2x-filter
         QF1 = QFilter[3]
         QF2 = QFilter[3]
         QF3 = QFilter[3]
@@ -432,7 +441,7 @@ def SWAP4x(C,EG,nl,tau,LD, QFilter_type):
             nl (int): the number of qubits in C
             tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
             LD (list): the index list of D, which represents the current logical circuit
-            QFilter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
+            QFliter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
                                     '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)
             
         Returns:
@@ -441,15 +450,15 @@ def SWAP4x(C,EG,nl,tau,LD, QFilter_type):
     '''
     
     QFilter = Q_Filter(C,EG,nl,tau,LD)
-    if QFilter_type == '0':
+    if QFliter_type == '0':
         QF4 = QFilter[0]
-    elif QFilter_type == '1':
+    elif QFliter_type == '1':
         QF4 = QFilter[1]
-    elif QFilter_type == '12':
+    elif QFliter_type == '12':
         QF4 = QFilter[2]
-    elif QFilter_type == '12x':
+    elif QFliter_type == '12x':
         QF4 = QFilter[3]
-    elif QFilter_type == '2x':
+    elif QFliter_type == '2x':
         QF4 = QFilter[3]
     else:
         pass
@@ -479,20 +488,24 @@ def SWAP4x(C,EG,nl,tau,LD, QFilter_type):
 ###\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\
 # This subroutine iteratively identifies those topgates in D (could be a solvable subgraph) that tau can solve/execute
 
-def greedy_solved_gates(C,G,EG,nl,tau,LD): 
+def greedy_solved_gates(C,G,EG,nl,tau,LD):
+
+    ''' Return the list of the indices of all gates solvable by a mapping tau
+
+    Args:
+        C (list): the input circuit
+        G (graph): the architecture graph
+        EG (list): the list of edges of G
+        nl (int): the number of qubits in C
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
+        LD (list): the index list of D, which represents the current logical circuit
+        
+    Returns:
+        LSTG (list): the list of indices of solvable gates in D
+    '''
+    
     #tau is a mapping, D a part of the given input circuit C, LD the index set of D
         # Output LTG: the index set (a subset of L) of a maximal subset of *top*gates that can be solved by tau
-    ''' Return the list of the indices of all gates solvable by a mapping tau
-        Args:
-            C (list): the input circuit
-            G (graph): the architecture graph
-            EG (list): the list of edges of G
-            nl (int): the number of qubits in C
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
-            LD (list): the index list of D, which represents the current logical circuit           
-        Returns:
-            LSTG (list): the list of indices of solvable gates in D
-    '''
     LDx = LD[:]
     LSTG = [] # the index set of all solved topgates (in perhaps two or more consecutive layers that are solvable by tau)
 
@@ -518,12 +531,13 @@ def greedy_solved_gates(C,G,EG,nl,tau,LD):
 # check if tau is complete w.r.t. the input circuit C, where nl is the numnber of qubits in C
 def complete_mapping(C,nl,tau):
     ''' Check if the mapping tau is complete
-        Args:
-            C (list): the input circuit
-            nl (int): the number of qubits in C
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits        
-        Returns:
-            True if tau is complete False else
+
+    Args:
+        C (list): the input circuit
+        nl (int): the number of qubits in C
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits        
+    Returns:
+        True if tau is complete False else
     '''
     
     if tau.count(20) == 20 - nl:
@@ -538,36 +552,40 @@ def complete_mapping(C,nl,tau):
 def good_next_mappingx(C,G,EG,nl,tau,LD,QFilter_type):
     # we assume that tau cannot solve any gates in D
     ''' Select the action (a sequence of swaps) and the mapping obtained by applying the action on tau
+
         Method: first check if tau can be extended so that some topgate is executable;
                 then, for each result rho=[action,mapping] in SWAP3x, compute the efficiency rate t of rho, and append [rho,t] in SG if t>0;
                 if SG is empty, then consider one more swap (i.e., consider SWAP4x), and obtain new SG;
                 if SG is still empty, then call the fallback;
                 otherwise, select the result with the highest t and return the corresponding action and the new mapping.
                 The efficiency rate of rho is defined as (number of solved gates)/(3*(number of swaps used))
-        Args:
-            C (list): the input circuit
-            G (graph): the architecture graph
-            EG (list): the list of edges of G
-            nl (int): the number of qubits in C
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
-            LD (list): the index list of D, which represents the current logical circuit            
-            QFilter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
-                                    '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)
-        Returns:
-            best_action (list), best_mapping (list), Fallback (Bool),
-            2nd_best_action (list), 2nd_best_mapping (list), 2nd_best_value >= 2/3*best_value (Bool)
-    '''
 
+    Args:
+        C (list): the input circuit
+        G (graph): the architecture graph
+        EG (list): the list of edges of G
+        nl (int): the number of qubits in C
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
+        LD (list): the index list of D, which represents the current logical circuit
+        QFliter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
+                                    '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)        
+    Returns:
+        best_action (list), best_mapping (list), Fallback (Bool),
+        2nd_best_action (list), 2nd_best_mapping (list), 2nd_best_value >= 2/3*best_value (Bool)
+    '''
+    
     LTG = topgates(C,nl,LD)
     TG = list(C[i] for i in LTG)
+    if not LD:
+        print('This is wrong') 
 
     # we first check if tau can be extended so that some topgate is executable    
     if not complete_mapping(C,nl,tau): 
 ##        print('The mapping %s is incomplete %s' %(tau,complete_mapping(tau)))
-        UU = swap_reduce_min_dist(G,tau,TG) # UU has form [taunew, path]
+        UU = swap_reduce_min_dist(G,tau,TG) # UU has form [taunew, action]
         if not UU[1]:
 ##            print('  We extend the incomplete mapping to an unoccupied physical qubit.')
-            return UU[1], UU[0]
+            return UU[1], UU[0], False, [], [], False
             
     # rho in SWAP3x has form [[edge_1,...],taunew], where tau is a mapping, [edge_1,...] is a sequence of swaps
     SG = [] # elements in SG has form [rho, t], where rho in SWAP3x and t the efficiency rate
@@ -592,51 +610,53 @@ def good_next_mappingx(C,G,EG,nl,tau,LD,QFilter_type):
     taunew = tau[:]
     
     if not SG: # if no proper mapping in SWAP1-4, take a random neighbor of tau
-        UU = swap_reduce_min_dist(G,tau,TG) # UU has form [taunew, path]
+        UU = swap_reduce_min_dist(G,tau,TG) # UU has form [taunew, action]
         print('  Oops, there are no good swaps, we select one swap that reduces the minimal distance')
-        return UU[1], UU[0]
+        return UU[1], UU[0], True, [], [], False
     
     # else, we select the mapping with the best efficiency rate from SG
     SG.sort(key=lambda t:t[1], reverse=True)
     sg = SG[0] # with form [rho, val], where rho has form [ [edge1,...], taunew]
-    path = sg[0][0] # with form [edge1,...], where each edge1 is a swap [p,q]
+    action = sg[0][0] # with form [edge1,...], where each edge1 is a swap [p,q]
     taunew = sg[0][1]
-                          
-    return path, taunew              
 
-    #!compare: QTokyo_f@2019-12-21
-    #added on 2019-12-21 to address the fallback concern 
+    #added on 2019-12-21 to address the fallback concern
         # put the next best action and mapping in the end,
         # and set a Bool parameter to indict whether Fallback would be activated
-    #sgx = SG[1]
-    #if sgx[1] < 2/3*sg[1]: #the next best action has significant worse value
-        #return action, taunew, False, [], [], False
-    #actionx = sgx[0][0]
-    #taunewx = sgx[0][1]                          
-    #return action, taunew, False, actionx, taunewx, True 
+    sgx = SG[1]
+    if sgx[1] < 2/3*sg[1]: #the next best action has significant worse value
+        return action, taunew, False, [], [], False
+    actionx = sgx[0][0]
+    taunewx = sgx[0][1]
+                          
+    return action, taunew, False, actionx, taunewx, True              
+
 ##################################################################
       #\__/#\__/#\#/~\ THE MAIN ALGORITH10M \__/#\__/#\#/~\
 ##################################################################
 
 def qct(C,G,EG,tau,QFilter_type):
     ''' Transform a quantum circuit so that it is executable in Q20 with initial mapping tau
+
         Method: while there are unprocessed CNOT gates in the logical circuit, first process all gates that can be solved by the current mapping,
                 then compute the next mapping and apply the corresponding action to transform to the next mapping.
-        Args:
-            C (list): the input circuit
-            G (graph): the architecture graph
-            EG (list): the list of edges of G
-            tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
-            QFilter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
-                                    '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)           
-        Returns:
-            C_out (list): the output circuit
-            cost_time: time (seconds) required
+
+    Args:
+        C (list): the input circuit
+        G (graph): the architecture graph
+        EG (list): the list of edges of G
+        tau (list): a mapping from V to Q, where V (Q) is the list of physical (logical) qubits
+        QFliter_type (str): '0' (no filter), '1' (Q0-filter as in the paper), '12' (Q0+Q1-filter),\
+                                    '12x' (Q0+weak_Q1-filter), '2x' (weak_Q1-filter)         
+    Returns:
+        C_out (list): the output circuit
+        cost_time: time (seconds) required
     '''
+
     QIC = qubit_in_circuit(C)
     nl = len(QIC) # number of qubits in C
     l = len(C)
-            
+
     #\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\#\__/#\#/\#\__/#\#/\__/--\__/#\__/#\#/~\
     #print('The input circuit C has %s CNOT gates and uses %s qubits in %s.' %(l,nl,QIC))
     #print('  We transform C into a physical circuit executatble in IBM Q Tokyo.')
@@ -655,7 +675,7 @@ def qct(C,G,EG,tau,QFilter_type):
     while nsvg < l:
 
         # first check what gates can be executed by taunew (obtained in the previous round),
-         # then remove their indices from L1 
+         # then remove their indices from L1
         GSG = greedy_solved_gates(C,G,EG,nl,taunew,L1)       
         for i in GSG:
             # if C[i] is executed, remove i from L1 and add CNOT gate [p,q] to C_out
@@ -674,16 +694,36 @@ def qct(C,G,EG,tau,QFilter_type):
             break
         
         nr += 1
-        Y = good_next_mappingx(C,G,EG,nl,taunew,L1,QFilter_type)
-        path = Y[0] # a sequence of swaps that transforms the previous mapping into the mapping tuanew below
+        # modified on 2019-12-21 to address the fallback concern
+        # simulate the process by looking ahead one step: if the best action would activate a fallback then try the second best action
+
+        Y = good_next_mappingx(C,G,EG,nl,taunew,L1) # returns (best_action, best_mapping, Fallback, 2nd_best_action, 2nd_best_mapping)
+        taux_temp = Y[1] # the temp new mapping resulted from the best action
+        tau_temp = taunew[:]
+        L1_temp = L1[:]
+        GSG_temp = greedy_solved_gates(C,G,EG,nl,taux_temp,L1_temp)       
+        for i in GSG_temp: 
+            L1_temp.remove(i)
+
+        if L1_temp and Y[5]: #Y[5] denotes that the 2nd best (action) value is at least 2/3 of the best (action) value
+            Y_tempx = good_next_mappingx(C,G,EG,nl,taux_temp,L1_temp) # look-ahead one more step by using the best action
+            if Y_tempx[2] == True: # Fallback would be activated
+                tauy_temp = Y[4] # the mapping resulted from the 2nd best action
+                L2_temp = L1[:]
+                Y_tempy = good_next_mappingx(C,G,EG,nl,tauy_temp,L2_temp) # look-ahead one more step by using the 2nd best action
+                if Y_tempy[2] == False: #Fallback would not be activated for the 2nd best action, we select the 2nd action
+                    action = Y[3]
+                    taunew = Y[4]
+        
+        action = Y[0] # a sequence of swaps that transforms the previous mapping into the mapping tuanew below
         taunew = Y[1]
-        cost = len(path)*3
+        cost = len(action)*3
 ##    print('Round %s: The next mapping' %nr)
 ##    print('   %s' %taunew)
-##    print('   is obtained by swaps in %s are enforced with cost %s' %(path,cost))
+##    print('   is obtained by swaps in %s are enforced with cost %s' %(action,cost))
             
         COST += cost
-        for edge in path:
+        for edge in action:
             # implement in C_out the swap corresponding to edge
             C_out.append([edge[0],edge[1]])
             C_out.append([edge[1],edge[0]])

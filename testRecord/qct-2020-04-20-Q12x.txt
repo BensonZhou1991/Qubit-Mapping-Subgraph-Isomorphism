@@ -1,0 +1,166 @@
+QFilter types (string):
+0 :: if no filter is used,
+1 :: if Q1 used for all layers,
+12 :: if Q1 used for the first layer and Q2 used for the other layers,
+12x :: if Q1 used for the first layer and Q1+Q2 used for the other layers,
+2x :: if Q1+Q2 used for all layers 
+In this test, we use Type 12x filter
+Mon Apr 20 11:58:02 2020
+(1, 'ham3_102.qasm.txt', 3, 11, 11, 0, 0.0)
+(4, 'one-two-three-v0_98.qasm.txt', 5, 65, 83, 18, 0.12)
+(5, 'one-two-three-v3_101.qasm.txt', 5, 32, 41, 9, 0.13)
+(8, 'sys6-v0_111.qasm.txt', 10, 98, 152, 54, 4.53)
+(10, 'decod24-v0_38.qasm.txt', 4, 23, 23, 0, 0.0)
+(12, 'alu-v1_29.qasm.txt', 5, 17, 26, 9, 0.05)
+(13, 'alu-v1_28.qasm.txt', 5, 18, 27, 9, 0.06)
+(15, '4gt4-v0_80.qasm.txt', 6, 79, 97, 18, 0.1)
+(19, 'ex-1_166.qasm.txt', 3, 9, 9, 0, 0.0)
+(26, '4gt5_77.qasm.txt', 5, 58, 67, 9, 0.41)
+(27, '4gt5_76.qasm.txt', 5, 46, 67, 21, 0.3)
+(33, 'rd32-v1_68.qasm.txt', 4, 16, 16, 0, 0.0)
+(36, 'one-two-three-v2_100.qasm.txt', 5, 32, 44, 12, 0.06)
+(40, 'alu-v2_33.qasm.txt', 5, 17, 23, 6, 0.03)
+(41, 'alu-v2_32.qasm.txt', 5, 72, 87, 15, 0.2)
+(46, 'mod5d2_64.qasm.txt', 5, 25, 43, 18, 0.42)
+(47, '4mod5-bdd_287.qasm.txt', 7, 31, 37, 6, 0.03)
+(48, 'rd32-v0_66.qasm.txt', 4, 16, 16, 0, 0.0)
+(49, 'ex1_226.qasm.txt', 6, 5, 5, 0, 0.0)
+(50, 'mod5d1_63.qasm.txt', 5, 13, 13, 0, 0.0)
+(52, 'alu-bdd_288.qasm.txt', 7, 38, 59, 21, 0.44)
+(54, 'mod10_176.qasm.txt', 5, 78, 93, 15, 0.18)
+(55, '4gt13-v1_93.qasm.txt', 5, 30, 30, 0, 0.0)
+(59, '4mod7-v0_94.qasm.txt', 5, 72, 84, 12, 0.59)
+(60, 'decod24-v3_45.qasm.txt', 5, 64, 79, 15, 0.55)
+(61, '4gt13_92.qasm.txt', 5, 30, 30, 0, 0.0)
+(62, '4mod7-v1_96.qasm.txt', 5, 72, 93, 21, 1.72)
+(64, 'alu-v0_26.qasm.txt', 5, 38, 50, 12, 0.06)
+(65, 'alu-v0_27.qasm.txt', 5, 17, 26, 9, 0.06)
+(72, '4_49_16.qasm.txt', 5, 99, 117, 18, 0.49)
+(73, 'decod24-v1_41.qasm.txt', 5, 38, 41, 3, 0.04)
+(74, 'aj-e11_165.qasm.txt', 5, 69, 93, 24, 0.35)
+(76, '4gt11_84.qasm.txt', 4, 9, 9, 0, 0.0)
+(77, 'miller_11.qasm.txt', 3, 23, 23, 0, 0.0)
+(80, '4mod5-v1_24.qasm.txt', 5, 16, 16, 0, 0.0)
+(82, '4mod5-v0_19.qasm.txt', 5, 16, 16, 0, 0.0)
+(83, '4mod5-v0_18.qasm.txt', 5, 31, 40, 9, 0.02)
+(84, 'ising_model_10.qasm.txt', 10, 90, 90, 0, 0.0)
+(85, '4gt5_75.qasm.txt', 5, 38, 47, 9, 0.02)
+(87, 'graycode6_47.qasm.txt', 6, 5, 5, 0, 0.0)
+(92, 'rd32_270.qasm.txt', 5, 36, 54, 18, 0.15)
+(93, 'decod24-bdd_294.qasm.txt', 6, 32, 44, 12, 0.05)
+(95, 'alu-v4_37.qasm.txt', 5, 18, 27, 9, 0.06)
+(96, 'alu-v4_36.qasm.txt', 5, 51, 57, 6, 0.04)
+(98, 'cnt3-5_179.qasm.txt', 16, 85, 88, 3, 0.03)
+(99, 'rd53_138.qasm.txt', 8, 60, 87, 27, 2.29)
+(100, 'decod24-v2_43.qasm.txt', 4, 22, 22, 0, 0.0)
+(101, '4gt12-v0_88.qasm.txt', 6, 86, 104, 18, 0.26)
+(102, 'one-two-three-v1_99.qasm.txt', 5, 59, 77, 18, 0.16)
+(104, '3_17_13.qasm.txt', 3, 17, 17, 0, 0.0)
+(106, 'qft_10.qasm.txt', 10, 90, 135, 45, 2.03)
+(114, '4gt10-v1_81.qasm.txt', 5, 66, 81, 15, 0.48)
+(115, '4gt13_91.qasm.txt', 5, 49, 55, 6, 0.07)
+(116, 'mod5mils_65.qasm.txt', 5, 16, 16, 0, 0.0)
+(117, '4gt13_90.qasm.txt', 5, 53, 62, 9, 0.1)
+(120, 'alu-v3_35.qasm.txt', 5, 18, 27, 9, 0.07)
+(121, 'alu-v3_34.qasm.txt', 5, 24, 33, 9, 0.02)
+(124, '4gt11_83.qasm.txt', 5, 14, 14, 0, 0.0)
+(125, '4gt11_82.qasm.txt', 5, 18, 21, 3, 0.02)
+(126, '4mod5-v1_22.qasm.txt', 5, 11, 11, 0, 0.0)
+(127, '4mod5-v1_23.qasm.txt', 5, 32, 41, 9, 0.02)
+(130, '4mod5-v0_20.qasm.txt', 5, 10, 10, 0, 0.0)
+(131, 'xor5_254.qasm.txt', 6, 5, 5, 0, 0.0)
+The average ratio is 3016 : 2428 = 1.242174629324547 
+The time spent for this test is 16.80866813659668
+QFilter types (string):
+0 :: if no filter is used,
+1 :: if Q1 used for all layers,
+12 :: if Q1 used for the first layer and Q2 used for the other layers,
+12x :: if Q1 used for the first layer and Q1+Q2 used for the other layers,
+2x :: if Q1+Q2 used for all layers 
+In this test, we use Type 12x filter
+Mon Apr 20 11:58:58 2020
+(2, 'con1_216.qasm.txt', 9, 415, 649, 234, 12.45)
+(3, 'mod10_171.qasm.txt', 5, 108, 144, 36, 0.59)
+(7, '4gt12-v1_89.qasm.txt', 6, 100, 157, 57, 0.57)
+(14, '0410184_169.qasm.txt', 14, 104, 110, 6, 0.16)
+(16, 'rd53_131.qasm.txt', 7, 200, 248, 48, 8.96)
+(17, 'rd53_130.qasm.txt', 7, 448, 601, 153, 18.7)
+(20, 'cm82a_208.qasm.txt', 8, 283, 373, 90, 2.25)
+(25, 'ising_model_13.qasm.txt', 13, 120, 120, 0, 0.0)
+(31, '4gt4-v0_79.qasm.txt', 6, 105, 114, 9, 0.68)
+(32, '4gt4-v0_78.qasm.txt', 6, 109, 121, 12, 0.75)
+(34, 'mod8-10_178.qasm.txt', 6, 152, 200, 48, 1.08)
+(38, '4gt4-v0_73.qasm.txt', 6, 179, 251, 72, 0.61)
+(39, '4gt4-v0_72.qasm.txt', 6, 113, 146, 33, 1.94)
+(42, 'hwb4_49.qasm.txt', 5, 107, 140, 33, 0.42)
+(43, 'mod5adder_127.qasm.txt', 6, 239, 323, 84, 2.38)
+(51, 'decod24-enable_126.qasm.txt', 6, 149, 215, 66, 0.58)
+(56, 'majority_239.qasm.txt', 7, 267, 330, 63, 1.95)
+(57, 'sf_276.qasm.txt', 6, 336, 372, 36, 0.29)
+(58, 'C17_204.qasm.txt', 7, 205, 274, 69, 3.44)
+(67, 'ex3_229.qasm.txt', 6, 175, 199, 24, 0.97)
+(69, '4gt12-v0_86.qasm.txt', 6, 116, 125, 9, 0.08)
+(70, '4gt12-v0_87.qasm.txt', 6, 112, 118, 6, 0.05)
+(75, 'rd84_142.qasm.txt', 15, 154, 244, 90, 25.04)
+(78, 'alu-v2_30.qasm.txt', 6, 223, 271, 48, 1.21)
+(79, 'alu-v2_31.qasm.txt', 5, 198, 249, 51, 0.53)
+(86, 'ex2_227.qasm.txt', 7, 275, 350, 75, 3.31)
+(89, 'mini-alu_167.qasm.txt', 5, 126, 156, 30, 1.36)
+(91, 'qft_16.qasm.txt', 16, 240, 429, 189, 24.85)
+(94, 'rd53_133.qasm.txt', 7, 256, 310, 54, 3.75)
+(97, 'ham7_104.qasm.txt', 7, 149, 203, 54, 0.51)
+(105, 'f2_232.qasm.txt', 8, 525, 714, 189, 4.42)
+(107, 'rd53_135.qasm.txt', 7, 134, 194, 60, 1.95)
+(108, 'one-two-three-v0_97.qasm.txt', 5, 128, 170, 42, 0.48)
+(109, 'rd53_251.qasm.txt', 8, 564, 720, 156, 11.18)
+(110, 'sf_274.qasm.txt', 6, 336, 366, 30, 0.4)
+(113, 'hwb5_53.qasm.txt', 6, 598, 760, 162, 5.64)
+(119, '4gt4-v1_74.qasm.txt', 6, 119, 143, 24, 0.18)
+(122, 'mod8-10_177.qasm.txt', 6, 196, 262, 66, 2.41)
+(129, 'ising_model_16.qasm.txt', 16, 150, 150, 0, 0.0)
+The average ratio is 11021 : 8513 = 1.2946082462116764 
+The time spent for this test is 146.12723588943481
+QFilter types (string):
+0 :: if no filter is used,
+1 :: if Q1 used for all layers,
+12 :: if Q1 used for the first layer and Q2 used for the other layers,
+12x :: if Q1 used for the first layer and Q1+Q2 used for the other layers,
+2x :: if Q1+Q2 used for all layers 
+In this test, we use Type 12x filter
+Mon Apr 20 12:04:36 2020
+(6, 'hwb7_59.qasm.txt', 8, 10681, 13696, 3015, 525.84)
+(9, 'hwb8_113.qasm.txt', 9, 30372, 41565, 11193, 1950.5)
+(11, 'mlp4_245.qasm.txt', 16, 8232, 12072, 3840, 2874.11)
+(18, '9symml_195.qasm.txt', 11, 15232, 21079, 5847, 1839.43)
+(21, 'sym9_193.qasm.txt', 11, 15232, 21079, 5847, 1745.96)
+(22, 'sym9_148.qasm.txt', 10, 9408, 10791, 1383, 175.1)
+(23, 'rd84_253.qasm.txt', 12, 5960, 8336, 2376, 911.26)
+(24, 'cm85a_209.qasm.txt', 14, 4986, 6891, 1905, 482.74)
+(28, 'adr4_197.qasm.txt', 13, 1498, 2173, 675, 132.31)
+(29, 'urf2_277.qasm.txt', 8, 10066, 15682, 5616, 783.55)
+(30, 'cycle10_2_110.qasm.txt', 12, 2648, 3668, 1020, 206.91)
+(35, 'urf1_278.qasm.txt', 9, 26692, 39481, 12789, 2771.88)
+(37, 'z4_268.qasm.txt', 11, 1343, 1823, 480, 164.49)
+(44, 'misex1_241.qasm.txt', 15, 2100, 2799, 699, 111.94)
+(45, 'square_root_7.qasm.txt', 15, 3089, 4229, 1140, 1585.36)
+(53, 'sao2_257.qasm.txt', 14, 16864, 22591, 5727, 3269.53)
+(63, 'max46_240.qasm.txt', 10, 11844, 15681, 3837, 805.1)
+(66, 'co14_215.qasm.txt', 15, 7840, 11773, 3933, 3515.02)
+(68, 'root_255.qasm.txt', 13, 7493, 10133, 2640, 939.16)
+(71, 'hwb6_56.qasm.txt', 7, 2952, 3867, 915, 57.77)
+(81, 'urf2_152.qasm.txt', 8, 35210, 50651, 15441, 1204.43)
+(88, 'radd_250.qasm.txt', 13, 1405, 1960, 555, 271.99)
+(90, 'dist_223.qasm.txt', 13, 16624, 23368, 6744, 2691.97)
+(103, 'rd73_252.qasm.txt', 10, 2319, 3282, 963, 207.18)
+(111, 'sym10_262.qasm.txt', 12, 28084, 37096, 9012, 3620.06)
+(112, 'sqn_258.qasm.txt', 10, 4459, 5980, 1521, 337.85)
+(118, 'urf5_280.qasm.txt', 9, 23764, 34639, 10875, 1564.0)
+(123, 'clip_206.qasm.txt', 14, 14772, 20949, 6177, 2953.32)
+(128, 'sym6_145.qasm.txt', 7, 1701, 2148, 447, 36.03)
+The average ratio is 449482 : 322870 = 1.3921454455353548 
+The time spent for this test is 37734.78910827637
+
+3016 : 2428 
+11021 : 8513
+449482 : 322870
+(3016 +11021 +449482) / (2428+ 8513+322870) = 1.3886
